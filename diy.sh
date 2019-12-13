@@ -7,3 +7,6 @@
 #=================================================
 # Modify default IP
 sed -i 's/192.168.1.1/192.168.10.254/g' package/base-files/files/bin/config_generate
+git clone https://github.com/openwrt-develop/luci-theme-atmaterial.git package
+git clone https://github.com/Ameykyl/luci-app-koolproxyR package
+git clone https://github.com/rosywrt/luci-theme-rosy package
