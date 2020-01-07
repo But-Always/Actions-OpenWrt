@@ -12,3 +12,4 @@ mkdir -p package/openwrt-packages
 
 git clone https://github.com/openwrt-develop/luci-theme-atmaterial.git package/openwrt-packages/luci-theme-atmaterial
 git clone https://github.com/Ameykyl/luci-app-koolproxyR package/openwrt-packages/luci-app-koolproxyR
+git clone https://github.com/pexcn/openwrt-chinadns-ng.git package/openwrt-packages/chinadns-ng
