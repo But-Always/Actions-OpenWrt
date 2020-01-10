@@ -6,20 +6,20 @@
 # Blog: https://p3terx.com
 #=================================================
 
-name: Build OpenWrt
+name: Build OpenWrt(lienol)
 
 on: 
   release:
     types: [published]
   push:
-  #  branches: 
-  #    - master
-  #  paths:
-  #    - '.config'
-  #schedule:
-  #  - cron: 0 1 * * 5
-  #watch:
-  #  types: [started]
+    branches: 
+      - master
+    paths:
+      - '.config'
+  schedule:
+    - cron: 0 1 * * 5
+  watch:
+    types: [started]
 
 jobs:
   build:
