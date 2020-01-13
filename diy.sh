@@ -10,5 +10,4 @@ sed -i 's/192.168.1.1/192.168.10.254/g' package/base-files/files/bin/config_gene
 
 mkdir -p package/openwrt-packages
 
-#git clone https://github.com/openwrt-develop/luci-theme-atmaterial.git package/openwrt-packages/luci-theme-atmaterial
 git clone https://github.com/brokeld/luci-app-koolproxyR.git package/openwrt-packages/luci-app-koolproxyR
