@@ -8,6 +8,8 @@
 name: openWrt(lienol)
 
 on:
+  release:
+    types: [published]
   schedule:
     - cron: 0 1 * * 5
   watch:
