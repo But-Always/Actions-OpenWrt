@@ -60,7 +60,7 @@ jobs:
 
     - name: add lienol openwrt-package
       env:
-        ADD_LIENOL: 'adLienol.sh'
+        ADD_LIENOL: 'addLienol.sh'
       run: |
         [ -e files ] && mv files openwrt/files
         chmod +x $ADD_LIENOL
