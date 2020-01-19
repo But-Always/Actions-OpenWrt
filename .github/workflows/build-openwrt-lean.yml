@@ -103,23 +103,38 @@ jobs:
         cd openwrt
         make -j1 V=s
 
-    - name: Upload bin directory
-      uses: actions/upload-artifact@master
-      if: always()
-      with:
-        name: OpenWrt_bin
-        path: openwrt/bin
-
-    - name: Organize files
-      if: always()
+    # 只保留一个文件 start
+    - name: Assemble artifact
       run: |
-        cd openwrt/bin/targets/*/*
-        rm -rf packages
-        echo "::set-env name=FIRMWARE::$(pwd)"
+          rm -rf ./artifact/
+          mkdir -p ./artifact/
+          find openwrt/bin/targets/ -name "*sysupgrade*bin*" | xargs -i mv -f {} ./artifact/
+          find openwrt/bin/targets/ -name "*combined*img*" | xargs -i mv -f {} ./artifact/
 
-    - name: Upload firmware
+    - name: Upload artifact
       uses: actions/upload-artifact@master
-      if: always()
       with:
-        name: OpenWrt_firmware
-        path: ${{ env.FIRMWARE }}
+        name: OpenWrt firmware
+        path: ./artifact/
+    # 只保留一个文件 end
+
+    #- name: Upload bin directory
+    #   uses: actions/upload-artifact@master
+    #   if: always()
+    #   with:
+    #     name: OpenWrt_bin
+    #     path: openwrt/bin
+
+    # - name: Organize files
+    #   if: always()
+    #   run: |
+    #     cd openwrt/bin/targets/*/*
+    #     rm -rf packages
+    #     echo "::set-env name=FIRMWARE::$(pwd)"
+
+    # - name: Upload firmware
+    #   uses: actions/upload-artifact@master
+    #   if: always()
+    #   with:
+    #     name: OpenWrt_firmware
+    #     path: ${{ env.FIRMWARE }}
