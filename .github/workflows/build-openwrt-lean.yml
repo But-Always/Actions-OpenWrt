@@ -114,7 +114,7 @@ jobs:
     - name: Upload artifact
       uses: actions/upload-artifact@master
       with:
-        name: OpenWrt firmware
+        name: OpenWrt(lean)
         path: ./artifact/
     # 只保留一个文件 end
 
