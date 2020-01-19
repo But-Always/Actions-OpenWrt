@@ -51,9 +51,21 @@ jobs:
         REPO_URL: https://github.com/coolsnowwolf/lede
         REPO_BRANCH: master
       run: git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
-        
+
+    - name: Clean feeds
+      run: cd openwrt && ./scripts/feeds clean
+
     - name: Update feeds
       run: cd openwrt && ./scripts/feeds update -a
+
+    - name: add lienol openwrt-package
+      env:
+        ADD_LIENOL: 'adLienol.sh'
+      run: |
+        [ -e files ] && mv files openwrt/files
+        chmod +x $ADD_LIENOL
+        cd openwrt
+        ../$ADD_LIENOL
 
     - name: Install feeds
       run: cd openwrt && ./scripts/feeds install -a
