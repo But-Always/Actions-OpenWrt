@@ -52,13 +52,16 @@ jobs:
         REPO_BRANCH: master
       run: git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
 
+    - name: add lienol openwrt-package
+      run: cd openwrt && echo 'src-git lienol https://github.com/Lienol/openwrt-package' >> ./feeds.conf.default
+    
     - name: Clean feeds
       run: cd openwrt && ./scripts/feeds clean
 
     - name: Update feeds
       run: cd openwrt && ./scripts/feeds update -a
 
-    - name: add lienol openwrt-package
+    - name: rm repeat package
       env:
         ADD_LIENOL: 'addLienol.sh'
       run: |
