@@ -9,7 +9,9 @@ rm -rf feeds/lienol/lienol/shadowsocksr-libev
 rm -rf feeds/lienol/lienol/pdnsd-alt
 rm -rf feeds/lienol/package/verysync
 rm -rf feeds/lienol/lienol/luci-app-verysync
+
 rm -rf package/lean/kcptun
+
 rm -rf package/lean/luci-app-kodexplorer
 rm -rf package/lean/luci-app-pppoe-relay
 rm -rf package/lean/luci-app-pptp-server
