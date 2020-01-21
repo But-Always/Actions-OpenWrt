@@ -6,20 +6,18 @@
 # Blog: https://p3terx.com
 #=================================================
 
-name: Build OpenWrt(lean)
+name: Build OpenWrt(lean lienol)
 
 on: 
-  release:
-    types: [published]
-  push:
-    branches: 
-      - master
-    paths:
-      - '.config'
-  schedule:
-    - cron: 0 2 * * 6
-  watch:
-    types: [started]
+  # release:
+  #   types: [published]
+  # push:
+  #   branches: 
+  #     - master
+  # schedule:
+  #   - cron: 0 2 * * 6
+  # watch:
+  #   types: [started]
 
 jobs:
   build:
@@ -52,15 +50,30 @@ jobs:
         REPO_BRANCH: master
       run: git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
 
+    - name: add lienol openwrt-package
+      run: cd openwrt && echo 'src-git lienol https://github.com/Lienol/openwrt-package' >> ./feeds.conf.default
+    
+    - name: Clean feeds
+      run: cd openwrt && ./scripts/feeds clean
+
     - name: Update feeds
       run: cd openwrt && ./scripts/feeds update -a
+
+    - name: rm repeat package
+      env:
+        ADD_LIENOL: 'addLienol.sh'
+      run: |
+        [ -e files ] && mv files openwrt/files
+        chmod +x $ADD_LIENOL
+        cd openwrt
+        ../$ADD_LIENOL
 
     - name: Install feeds
       run: cd openwrt && ./scripts/feeds install -a
 
     - name: Load custom configuration
       env:
-        CONFIG_FILE: '.config'
+        CONFIG_FILE: '.config-lean-lienol'
         DIY_SH: 'diy.sh'
       run: |
         [ -e files ] && mv files openwrt/files
