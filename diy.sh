@@ -12,6 +12,8 @@ mkdir -p package/openwrt-packages
 
 git clone https://github.com/brokeld/luci-app-koolproxyR.git package/openwrt-packages/luci-app-koolproxyR
 
+git clone https://github.com/vernesong/OpenClash.git package/openwrt-packages/luci-app-openclash
+
 # echo "export ALL_PROXY=\"socks5://192.168.10.222:1061\"" >> ~/.bashrc
 # echo "export all_proxy=\"socks5://192.168.10.222:1061\"" >> ~/.bashrc
 # sudo tee -a /etc/apt/apt.conf <<< 'Acquire::http::Proxy "http://192.168.10.222:1041";' > /dev/null
