@@ -31,3 +31,8 @@ git clone https://github.com/vernesong/OpenClash.git package/openwrt-packages/lu
 # 取消加速
 # git config --global --unset http.https://github.com.proxy
 # git config --global --unset https.https://github.com.proxy
+
+
+# ./scripts/feeds update -a
+# ./scripts/feeds install -a
+# make menuconfig
