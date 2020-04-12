@@ -23,7 +23,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
 
     steps:
     - name: Checkout
@@ -33,30 +33,46 @@ jobs:
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
+        docker rmi `docker images -q`
         echo "Deleting files, please wait ..."
-        sudo rm -rf /usr/share/dotnet /etc/apt/sources.list.d/*
-        sudo swapoff /swapfile
-        sudo rm -f /swapfile
-        #docker rmi `docker images -q`
-        #sudo -E apt-get -q purge azure-cli ghc* zulu* hhvm llvm* firefox google* dotnet* powershell openjdk* mysql* php*
-        sudo -E apt-get -qq update
-        sudo -E apt-get -qq install build-essential asciidoc binutils bzip2 gawk gettext git libncurses5-dev libz-dev patch unzip zlib1g-dev lib32gcc1 libc6-dev-i386 subversion flex uglifyjs git-core gcc-multilib p7zip p7zip-full msmtp libssl-dev texinfo libglib2.0-dev xmlto qemu-utils upx libelf-dev autoconf automake libtool autopoint device-tree-compiler
-        sudo -E apt-get -qq autoremove --purge
-        sudo -E apt-get -qq clean
-        curl -fsSL https://raw.githubusercontent.com/P3TERX/dotfiles/master/.bashrc >> ~/.bashrc
-        sudo ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
-
+        sudo rm -rf \
+          /usr/share/dotnet \
+          /etc/mysql \
+          /etc/php
+        sudo -E apt-get -y purge \
+          azure-cli \
+          ghc* \
+          zulu* \
+          hhvm \
+          llvm* \
+          firefox \
+          google* \
+          dotnet* \
+          powershell \
+          openjdk* \
+          mysql* \
+          php*
+        sudo -E apt-get update
+        sudo -E apt-get -y install build-essential asciidoc binutils bzip2 gawk gettext git libncurses5-dev libz-dev patch python3.5 unzip zlib1g-dev lib32gcc1 libc6-dev-i386 subversion flex uglifyjs git-core gcc-multilib p7zip p7zip-full msmtp libssl-dev texinfo libglib2.0-dev xmlto qemu-utils upx libelf-dev autoconf automake libtool autopoint device-tree-compiler g++-multilib antlr3 gperf
+        sudo -E apt-get -y autoremove --purge
+        sudo -E apt-get clean
     - name: Clone source code
       env: 
         REPO_URL: https://github.com/coolsnowwolf/lede
         REPO_BRANCH: master
       run: git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
 
-    - name: Update feeds
-      run: cd openwrt && ./scripts/feeds update -a
-
-    - name: Install feeds
-      run: cd openwrt && ./scripts/feeds install -a
+    - name: Update & Install feeds
+      working-directory: ./openwrt
+      run: |
+        ./scripts/feeds update -a
+        ./scripts/feeds install -a
+        ./scripts/feeds install -a
+    #- name: Import external feeds
+    #  working-directory: ./openwrt
+    #  run: |
+    #    git clone https://github.com/Lienol/openwrt-package package/lienol
+    #    git clone "your_github_link" package/"your_folder_name"      
 
     - name: Load custom configuration
       env:
@@ -69,60 +85,22 @@ jobs:
         cd openwrt
         ../$DIY_SH
         make defconfig
-
    # - name: SSH connection to Actions
    #   uses: P3TERX/debugger-action@master
 
     - name: Download package
+      working-directory: ./openwrt
       run: |
-        cd openwrt && make download -j8
+        make download -j$(nproc)
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
-
-    - name: Multi-thread compile
+    - name: Build firmware
+      working-directory: ./openwrt
       run: |
-        cd openwrt
-        echo -e "$(nproc) thread compile"
-        make -j$(nproc)
-
-    - name: Single-thread compile
-      if: failure()
-      run: |
-        cd openwrt
-        make -j1 V=s
-
-    # 只保留一个文件 start
-    - name: Assemble artifact
-      run: |
-          rm -rf ./artifact/
-          mkdir -p ./artifact/
-          find openwrt/bin/targets/ -name "*sysupgrade*bin*" | xargs -i mv -f {} ./artifact/
-          find openwrt/bin/targets/ -name "*combined*img*" | xargs -i mv -f {} ./artifact/
-
+        echo -e "$(nproc) thread build."
+        make -j$(nproc) V=s
     - name: Upload artifact
       uses: actions/upload-artifact@master
       with:
-        name: OpenWrt(lean)
-        path: ./artifact/
-    # 只保留一个文件 end
-
-    #- name: Upload bin directory
-    #   uses: actions/upload-artifact@master
-    #   if: always()
-    #   with:
-    #     name: OpenWrt_bin
-    #     path: openwrt/bin
-
-    # - name: Organize files
-    #   if: always()
-    #   run: |
-    #     cd openwrt/bin/targets/*/*
-    #     rm -rf packages
-    #     echo "::set-env name=FIRMWARE::$(pwd)"
-
-    # - name: Upload firmware
-    #   uses: actions/upload-artifact@master
-    #   if: always()
-    #   with:
-    #     name: OpenWrt_firmware
-    #     path: ${{ env.FIRMWARE }}
+        name: OpenWrt
+        path: openwrt/bin
