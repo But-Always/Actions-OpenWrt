@@ -1,25 +1,25 @@
 #=================================================
-# https://github.com/P3TERX/Actions-OpenWrt
 # Description: Build OpenWrt using GitHub Actions
 # Lisence: MIT
-# Author: P3TERX
-# Blog: https://p3terx.com
+# Author: eSirPlayground
+# Youtube Channel: https://goo.gl/fvkdwm 
 #=================================================
 
-name: Build OpenWrt(lean)
+name: Build_x86_64
 
 on: 
   release:
     types: [published]
-  push:
-    branches: 
-      - master
-    paths:
-      - '.config'
-  schedule:
-    - cron: 0 2 * * 6
-  watch:
-    types: [started]
+
+  #push:
+  #  branches: 
+  #    - master
+
+  #schedule:
+  #  - cron: 0 8 * * 5
+  
+  #watch:
+  #  types: [started]
 
 jobs:
   build:
@@ -56,50 +56,51 @@ jobs:
         sudo -E apt-get -y install build-essential asciidoc binutils bzip2 gawk gettext git libncurses5-dev libz-dev patch python3.5 unzip zlib1g-dev lib32gcc1 libc6-dev-i386 subversion flex uglifyjs git-core gcc-multilib p7zip p7zip-full msmtp libssl-dev texinfo libglib2.0-dev xmlto qemu-utils upx libelf-dev autoconf automake libtool autopoint device-tree-compiler g++-multilib antlr3 gperf
         sudo -E apt-get -y autoremove --purge
         sudo -E apt-get clean
+
     - name: Clone source code
       env: 
         REPO_URL: https://github.com/coolsnowwolf/lede
         REPO_BRANCH: master
-      run: git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
-
+      run: |
+        git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
+        cd openwrt
+        echo "src-git helloworld https://github.com/fw876/helloworld" >> feeds.conf.default
+        
     - name: Update & Install feeds
       working-directory: ./openwrt
       run: |
         ./scripts/feeds update -a
         ./scripts/feeds install -a
         ./scripts/feeds install -a
+
     #- name: Import external feeds
     #  working-directory: ./openwrt
     #  run: |
     #    git clone https://github.com/Lienol/openwrt-package package/lienol
     #    git clone "your_github_link" package/"your_folder_name"      
 
-    - name: Load custom configuration
+    - name: Configuration Customization - Build_x86_64
       env:
-        CONFIG_FILE: '.config'
-        DIY_SH: 'diy.sh'
+        CONFIG_FILE: 'x86_64.config'
       run: |
-        [ -e files ] && mv files openwrt/files
         [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
-        chmod +x $DIY_SH
-        cd openwrt
-        ../$DIY_SH
-        make defconfig
-   # - name: SSH connection to Actions
-   #   uses: P3TERX/debugger-action@master
-
+        chmod +x ./customize.sh && ./customize.sh
+        cd openwrt && make defconfig
+        
     - name: Download package
       working-directory: ./openwrt
       run: |
         make download -j$(nproc)
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
+
     - name: Build firmware
       working-directory: ./openwrt
       run: |
         echo -e "$(nproc) thread build."
         make -j$(nproc) V=s
-    - name: Upload artifact
+
+    - name : Upload artifact
       uses: actions/upload-artifact@master
       with:
         name: OpenWrt
