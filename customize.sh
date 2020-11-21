@@ -6,8 +6,8 @@
 # Blog: https://p3terx.com
 #=================================================
 # Modify default IP
-sed -i 's/192.168.1.1/192.168.10.254/g' package/base-files/files/bin/config_generate
-
+#sed -i 's/192.168.1.1/192.168.10.254/g' package/base-files/files/bin/config_generate
+sed -i 's/192.168.1.1/192.168.10.254/g' openwrt/package/base-files/files/bin/config_generate
 #sed -i 's/^#\(.*helloworld\)/\1/' feeds.conf.default
 
 #mkdir -p package/openwrt-packages

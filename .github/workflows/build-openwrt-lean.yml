@@ -75,8 +75,9 @@ jobs:
       - name: Import feeds
         working-directory: ./openwrt
         run: |
-          git clone https://github.com/kenzok8/openwrt-packages package/openwrt-packages
-          git clone https://github.com/kenzok8/small package/small
+          git clone https://github.com/kenzok8/openwrt-packages.git package/openwrt-packages
+          git clone https://github.com/kenzok8/small.git package/small
+          git clone https://github.com/jerrykuku/luci-app-jd-dailybonus.git package/lean/luci-app-jd-dailybonus
 
       - name: Configuration Customization - Build_x86_64
         env:
